@@ -46,6 +46,9 @@ impl Lag {
     pub fn as_minutes(self) -> i64 {
         self.0.0 / 10
     }
+    pub fn ticks(self) -> i64 {
+        self.0.0
+    }
 }
 
 /// Entity identities: integer MSP UIDs, preserved exactly from the source (§4.1).

@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/domain",
     "crates/interop-mpp",
+    "crates/interop-mspdi",
     "crates/schedule",
 ]
 
@@ -16,6 +17,7 @@ rust-version = "1.85"
 chrono = "0.4"
 thiserror = "2"
 mpxj-rs = "=0.1.1"
+quick-xml = "0.38"
 
 [profile.release]
 lto = "thin"
