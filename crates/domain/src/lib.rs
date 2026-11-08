@@ -3,24 +3,26 @@
 //! This crate holds the owned, `Send + Sync` project model the rest of the
 //! application works on. During Phase 0 it is deliberately minimal: it exists to
 //! prove the MPP import pipeline can convert `mpxj-rs`'s `Rc<RefCell<…>>` graph into
-//! owned values without leaking parser types, and to give the scheduling engine a
-//! model to operate on. It will be expanded to the full model described in §4 of
-//! `specification-v1.1.md` during Phase 1.
+//! owned values without leaking parser types, and to give the scheduling engine and the
+//! native store a model to operate on. It will be expanded to the full model described in
+//! §4 of `specification-v1.1.md` during Phase 1.
 //!
 //! Invariants:
-//! - This crate MUST NOT depend on any parser, I/O, or UI crate (§2.2).
+//! - This crate MUST NOT depend on any parser, I/O, or UI crate (§2.2). `serde` derives are
+//!   data-format-agnostic serialization, not I/O.
 //! - `Tick` is 0.1 minute (§4.2).
 
 #![forbid(unsafe_code)]
 
 use chrono::{NaiveDate, NaiveDateTime};
+use serde::{Deserialize, Serialize};
 
 /// 0.1 minute. Durations and work are stored as integer ticks (§4.2).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize)]
 pub struct Tick(pub i64);
 
 /// Working duration, a distinct newtype so it cannot be confused with work or lag.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize)]
 pub struct Duration(pub Tick);
 
 impl Duration {
@@ -36,7 +38,7 @@ impl Duration {
 }
 
 /// Dependency lag (lead when negative), a distinct newtype from duration and work.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize)]
 pub struct Lag(pub Tick);
 
 impl Lag {
@@ -52,20 +54,20 @@ impl Lag {
 }
 
 /// Entity identities: integer MSP UIDs, preserved exactly from the source (§4.1).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct TaskUid(pub i32);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct ResourceUid(pub i32);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct AssignmentUid(pub i32);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct CalendarUid(pub i32);
 
 /// Fidelity class for a single imported field (Appendix A.0).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum FidelityClass {
     /// Full: imported with exact values.
     Full,
@@ -93,7 +95,7 @@ impl FidelityClass {
 }
 
 /// One field-level fidelity record.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FieldEntry {
     pub field: String,
     pub class: FidelityClass,
@@ -101,7 +103,7 @@ pub struct FieldEntry {
 }
 
 /// Aggregate fidelity report produced by every import (§3.3 step 6).
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct FidelityReport {
     pub tasks: usize,
     pub resources: usize,
@@ -130,7 +132,7 @@ impl FidelityReport {
 }
 
 /// A working interval within a day, half-open `[start, end)` in minutes since midnight.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TimeInterval {
     pub start: i64,
     pub end: i64,
@@ -144,7 +146,7 @@ impl TimeInterval {
 }
 
 /// A calendar exception: a single date that overrides the weekly pattern (§4.7).
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CalendarException {
     pub date: NaiveDate,
     pub working: bool,
@@ -156,7 +158,7 @@ pub struct CalendarException {
 ///
 /// `week` is indexed by `Weekday::num_days_from_monday()`, i.e. 0 = Monday .. 6 = Sunday.
 /// Base-calendar inheritance is a Phase 1 concern; the spike resolves a single calendar.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Calendar {
     pub uid: CalendarUid,
     pub name: String,
@@ -200,7 +202,7 @@ impl Calendar {
 }
 
 /// The eight Microsoft Project constraint types (§5.5).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ConstraintType {
     AsSoonAsPossible,
     AsLateAsPossible,
@@ -213,7 +215,7 @@ pub enum ConstraintType {
 }
 
 /// The four dependency relation types (§4.8).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RelationType {
     FinishToFinish,
     FinishToStart,
@@ -222,7 +224,7 @@ pub enum RelationType {
 }
 
 /// A predecessor/successor dependency with a relation type and lag (§4.8).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Dependency {
     pub predecessor: TaskUid,
     pub successor: TaskUid,
@@ -231,7 +233,7 @@ pub struct Dependency {
 }
 
 /// A task, in row order (§4.4). Minimal Phase 0 subset.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct Task {
     pub uid: Option<TaskUid>,
     pub id: Option<i32>,
@@ -249,7 +251,7 @@ pub struct Task {
 }
 
 /// The project root. Minimal Phase 0 subset.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct Project {
     pub name: Option<String>,
     pub start_date: Option<NaiveDateTime>,

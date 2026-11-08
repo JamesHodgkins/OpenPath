@@ -1,0 +1,18 @@
+[package]
+name = "store"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+domain = { path = "../domain" }
+serde.workspace = true
+ciborium.workspace = true
+blake3.workspace = true
+byteorder.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+chrono.workspace = true

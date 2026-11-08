@@ -6,4 +6,5 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-chrono.workspace = true
+serde.workspace = true
+chrono = { workspace = true, features = ["serde"] }

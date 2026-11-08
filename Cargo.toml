@@ -5,6 +5,7 @@ members = [
     "crates/interop-mpp",
     "crates/interop-mspdi",
     "crates/schedule",
+    "crates/store",
 ]
 
 [workspace.package]
@@ -18,6 +19,11 @@ chrono = "0.4"
 thiserror = "2"
 mpxj-rs = "=0.1.1"
 quick-xml = "0.38"
+serde = { version = "1", features = ["derive"] }
+ciborium = "0.2"
+blake3 = "1"
+byteorder = "1"
+serde_json = "1"
 
 [profile.release]
 lto = "thin"
