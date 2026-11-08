@@ -7,6 +7,7 @@ members = [
     "crates/schedule",
     "crates/store",
     "crates/cli",
+    "crates/op-ui",
 ]
 
 [workspace.package]
@@ -25,6 +26,7 @@ ciborium = "0.2"
 blake3 = "1"
 byteorder = "1"
 serde_json = "1"
+egui = "0.31"
 
 [profile.release]
 lto = "thin"
