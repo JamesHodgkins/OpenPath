@@ -1,0 +1,10 @@
+[package]
+name = "schedule"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+domain = { path = "../domain" }
+chrono.workspace = true

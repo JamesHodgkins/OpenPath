@@ -97,6 +97,7 @@ fn convert(file: &Rc<RefCell<ProjectFile>>) -> ImportedProject {
         status_date: props.get_status_date(),
         minutes_per_day: props.get_minutes_per_day(),
         tasks,
+        ..Default::default()
     };
 
     ImportedProject { project, fidelity: report }
@@ -114,6 +115,7 @@ fn convert_task(t: &mpxj::Task, props: &ProjectProperties) -> Task {
         finish: t.get_finish(),
         percent_complete: t.get_percentage_complete(),
         duration: t.get_duration().and_then(|d| duration_ticks(&d, props)),
+        ..Default::default()
     }
 }
 

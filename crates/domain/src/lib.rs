@@ -3,8 +3,9 @@
 //! This crate holds the owned, `Send + Sync` project model the rest of the
 //! application works on. During Phase 0 it is deliberately minimal: it exists to
 //! prove the MPP import pipeline can convert `mpxj-rs`'s `Rc<RefCell<…>>` graph into
-//! owned values without leaking parser types. It will be expanded to the full model
-//! described in §4 of `specification-v1.1.md` during Phase 1.
+//! owned values without leaking parser types, and to give the scheduling engine a
+//! model to operate on. It will be expanded to the full model described in §4 of
+//! `specification-v1.1.md` during Phase 1.
 //!
 //! Invariants:
 //! - This crate MUST NOT depend on any parser, I/O, or UI crate (§2.2).
@@ -12,7 +13,7 @@
 
 #![forbid(unsafe_code)]
 
-use chrono::NaiveDateTime;
+use chrono::{NaiveDate, NaiveDateTime};
 
 /// 0.1 minute. Durations and work are stored as integer ticks (§4.2).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
@@ -21,6 +22,31 @@ pub struct Tick(pub i64);
 /// Working duration, a distinct newtype so it cannot be confused with work or lag.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 pub struct Duration(pub Tick);
+
+impl Duration {
+    pub fn from_minutes(min: i64) -> Self {
+        Duration(Tick(min * 10))
+    }
+    pub fn as_minutes(self) -> i64 {
+        self.0.0 / 10
+    }
+    pub fn ticks(self) -> i64 {
+        self.0.0
+    }
+}
+
+/// Dependency lag (lead when negative), a distinct newtype from duration and work.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+pub struct Lag(pub Tick);
+
+impl Lag {
+    pub fn from_minutes(min: i64) -> Self {
+        Lag(Tick(min * 10))
+    }
+    pub fn as_minutes(self) -> i64 {
+        self.0.0 / 10
+    }
+}
 
 /// Entity identities: integer MSP UIDs, preserved exactly from the source (§4.1).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -100,6 +126,107 @@ impl FidelityReport {
     }
 }
 
+/// A working interval within a day, half-open `[start, end)` in minutes since midnight.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct TimeInterval {
+    pub start: i64,
+    pub end: i64,
+}
+
+impl TimeInterval {
+    pub fn new(start: i64, end: i64) -> Self {
+        debug_assert!(start < end && start >= 0 && end <= 1440);
+        TimeInterval { start, end }
+    }
+}
+
+/// A calendar exception: a single date that overrides the weekly pattern (§4.7).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CalendarException {
+    pub date: NaiveDate,
+    pub working: bool,
+    /// Replacement working intervals when `working` is true.
+    pub intervals: Vec<TimeInterval>,
+}
+
+/// A project/resource/task calendar (§4.7).
+///
+/// `week` is indexed by `Weekday::num_days_from_monday()`, i.e. 0 = Monday .. 6 = Sunday.
+/// Base-calendar inheritance is a Phase 1 concern; the spike resolves a single calendar.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Calendar {
+    pub uid: CalendarUid,
+    pub name: String,
+    pub base_uid: Option<CalendarUid>,
+    pub week: [Vec<TimeInterval>; 7],
+    pub exceptions: Vec<CalendarException>,
+}
+
+impl Calendar {
+    /// Monday–Friday, 08:00–17:00.
+    pub fn standard(name: impl Into<String>) -> Self {
+        let day = vec![TimeInterval::new(480, 1020)];
+        let mut week: [Vec<TimeInterval>; 7] = Default::default();
+        for slot in week.iter_mut().take(5) {
+            *slot = day.clone();
+        }
+        Calendar {
+            uid: CalendarUid(0),
+            name: name.into(),
+            base_uid: None,
+            week,
+            exceptions: Vec::new(),
+        }
+    }
+
+    /// Every day, 00:00–24:00.
+    pub fn twenty_four_seven(name: impl Into<String>) -> Self {
+        let day = vec![TimeInterval::new(0, 1440)];
+        let mut week: [Vec<TimeInterval>; 7] = Default::default();
+        for slot in week.iter_mut() {
+            *slot = day.clone();
+        }
+        Calendar {
+            uid: CalendarUid(0),
+            name: name.into(),
+            base_uid: None,
+            week,
+            exceptions: Vec::new(),
+        }
+    }
+}
+
+/// The eight Microsoft Project constraint types (§5.5).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ConstraintType {
+    AsSoonAsPossible,
+    AsLateAsPossible,
+    MustStartOn,
+    MustFinishOn,
+    StartNoEarlierThan,
+    StartNoLaterThan,
+    FinishNoEarlierThan,
+    FinishNoLaterThan,
+}
+
+/// The four dependency relation types (§4.8).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RelationType {
+    FinishToFinish,
+    FinishToStart,
+    StartToFinish,
+    StartToStart,
+}
+
+/// A predecessor/successor dependency with a relation type and lag (§4.8).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Dependency {
+    pub predecessor: TaskUid,
+    pub successor: TaskUid,
+    pub relation_type: RelationType,
+    pub lag: Lag,
+}
+
 /// A task, in row order (§4.4). Minimal Phase 0 subset.
 #[derive(Debug, Clone, Default)]
 pub struct Task {
@@ -113,6 +240,9 @@ pub struct Task {
     pub finish: Option<NaiveDateTime>,
     pub percent_complete: Option<f64>,
     pub duration: Option<Duration>,
+    pub constraint_type: Option<ConstraintType>,
+    pub constraint_date: Option<NaiveDateTime>,
+    pub deadline: Option<NaiveDateTime>,
 }
 
 /// The project root. Minimal Phase 0 subset.
@@ -124,4 +254,6 @@ pub struct Project {
     pub status_date: Option<NaiveDateTime>,
     pub minutes_per_day: Option<i32>,
     pub tasks: Vec<Task>,
+    pub calendars: Vec<Calendar>,
+    pub dependencies: Vec<Dependency>,
 }
