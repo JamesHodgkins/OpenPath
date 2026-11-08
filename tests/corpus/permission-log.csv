@@ -1,0 +1,2 @@
+permission_log_id,file,format,source,obtained_from,consent_granted_on,consent_by,redaction_applied,notes
+PL-001,<placeholder>,mpp14,synthetic,generated in-house,2026-11-08,product,none,example row — replace before any commit

@@ -1,0 +1,20 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/domain",
+    "crates/interop-mpp",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-or-later"
+rust-version = "1.85"
+
+[workspace.dependencies]
+chrono = "0.4"
+thiserror = "2"
+mpxj-rs = "=0.1.1"
+
+[profile.release]
+lto = "thin"

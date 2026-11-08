@@ -1,0 +1,7 @@
+# Normalize line endings across platforms.
+* text=auto
+
+# Rust sources are LF.
+*.rs text eol=lf
+*.toml text eol=lf
+*.md text eol=lf
