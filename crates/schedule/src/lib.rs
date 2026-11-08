@@ -10,6 +10,6 @@ pub mod cpm;
 
 pub use calendar::{
     add_working_minutes, is_working, next_working_instant, prev_working_instant,
-    working_minutes_between,
+    working_minutes_between, working_minutes_signed,
 };
 pub use cpm::{schedule, Diagnostic, ScheduleOptions, ScheduleOutput, ScheduledTask};

@@ -187,6 +187,16 @@ pub fn working_minutes_between(a: NaiveDateTime, b: NaiveDateTime, cal: &Calenda
     total
 }
 
+/// Signed working minutes from `a` to `b`: positive when `b` is after `a`, negative when
+/// before. Used for slack, which may be negative (§5.6).
+pub fn working_minutes_signed(a: NaiveDateTime, b: NaiveDateTime, cal: &Calendar) -> i64 {
+    if a <= b {
+        working_minutes_between(a, b, cal)
+    } else {
+        -working_minutes_between(b, a, cal)
+    }
+}
+
 /// Add `minutes` working minutes to `t`. Positive moves forward, negative moves backward.
 /// `add_working_minutes(t, 0)` returns `next_working_instant(t)`.
 pub fn add_working_minutes(t: NaiveDateTime, minutes: i64, cal: &Calendar) -> NaiveDateTime {

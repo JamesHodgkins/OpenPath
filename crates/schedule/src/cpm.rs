@@ -7,8 +7,8 @@
 //! - Start/finish/total/free slack and the critical flag.
 //!
 //! Not yet implemented (Phase 1 / G3): schedule-from-finish, manual tasks, summary
-//! rollup, per-task calendars, ALAP late-bound resolution, and working-time (as opposed
-//! to clock-time) slack measurement. All of these are called out where relevant below.
+//! rollup, per-task calendars, and ALAP late-bound resolution. Slack is measured in
+//! working minutes (not clock time); the remaining items are called out where relevant.
 
 #![forbid(unsafe_code)]
 
@@ -17,7 +17,9 @@ use std::collections::{HashMap, VecDeque};
 use chrono::NaiveDateTime;
 use domain::{Calendar, ConstraintType, Dependency, RelationType, Task, TaskUid};
 
-use crate::calendar::{add_working_minutes, next_working_instant, prev_working_instant};
+use crate::calendar::{
+    add_working_minutes, next_working_instant, prev_working_instant, working_minutes_signed,
+};
 
 /// Scheduling inputs from §5.2.
 #[derive(Debug, Clone)]
@@ -54,7 +56,7 @@ pub struct ScheduledTask {
     pub early_finish: NaiveDateTime,
     pub late_start: NaiveDateTime,
     pub late_finish: NaiveDateTime,
-    /// `min(start_slack, finish_slack)`, in minutes (clock difference in the spike).
+    /// `min(start_slack, finish_slack)`, in working minutes.
     pub total_slack_minutes: i64,
     pub free_slack_minutes: i64,
     pub is_critical: bool,
@@ -218,8 +220,8 @@ pub fn schedule(
         let e_f = ef[i].unwrap();
         let l_s = ls[i].unwrap();
         let l_f = lf[i].unwrap();
-        let start_slack = (l_s - e_s).num_minutes();
-        let finish_slack = (l_f - e_f).num_minutes();
+        let start_slack = working_minutes_signed(e_s, l_s, cal);
+        let finish_slack = working_minutes_signed(e_f, l_f, cal);
         let total = start_slack.min(finish_slack);
         let free = free_slack(i, tasks, deps, &uid_to_idx, &es, &ef, cal).unwrap_or(total);
         let is_critical = total <= options.critical_slack_limit;
@@ -415,19 +417,19 @@ fn free_slack(
         let succ_es = es[si].unwrap();
         let succ_ef = ef[si].unwrap();
         let lag = d.lag.as_minutes();
-        // Free-slack term (§5.6), with a calendar-aware lag shift.
+        // Free-slack term (§5.6), measured in working minutes.
         let term = match d.relation_type {
             RelationType::FinishToStart => {
-                (add_working_minutes(succ_es, -lag, cal) - e_f).num_minutes()
+                working_minutes_signed(add_working_minutes(e_f, lag, cal), succ_es, cal)
             }
             RelationType::StartToStart => {
-                (add_working_minutes(succ_es, -lag, cal) - e_s).num_minutes()
+                working_minutes_signed(add_working_minutes(e_s, lag, cal), succ_es, cal)
             }
             RelationType::FinishToFinish => {
-                (add_working_minutes(succ_ef, -lag, cal) - e_f).num_minutes()
+                working_minutes_signed(add_working_minutes(e_f, lag, cal), succ_ef, cal)
             }
             RelationType::StartToFinish => {
-                (add_working_minutes(succ_ef, -lag, cal) - e_s).num_minutes()
+                working_minutes_signed(add_working_minutes(e_s, lag, cal), succ_ef, cal)
             }
         };
         best = Some(best.map_or(term, |b| b.min(term)));
