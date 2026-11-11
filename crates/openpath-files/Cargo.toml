@@ -1,0 +1,20 @@
+[package]
+name = "openpath-files"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "OpenPath native file format (.opath): container, checksums, migrations and atomic save."
+
+[dependencies]
+openpath-core.workspace = true
+serde.workspace = true
+ciborium.workspace = true
+blake3.workspace = true
+byteorder.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+chrono.workspace = true

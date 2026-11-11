@@ -1,0 +1,20 @@
+[package]
+name = "openpath-app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "OpenPath desktop application (egui / eframe)."
+
+[[bin]]
+name = "openpath"
+path = "src/main.rs"
+
+[dependencies]
+openpath-core.workspace = true
+openpath-schedule.workspace = true
+openpath-ui.workspace = true
+chrono.workspace = true
+egui.workspace = true
+eframe.workspace = true

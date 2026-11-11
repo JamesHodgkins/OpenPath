@@ -1,0 +1,12 @@
+[package]
+name = "openpath-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "OpenPath project model: tasks, calendars, dependencies and units. No I/O, parsers or UI."
+
+[dependencies]
+serde.workspace = true
+chrono = { workspace = true, features = ["serde"] }

@@ -1,0 +1,19 @@
+[package]
+name = "openpath-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "OpenPath headless command-line tool (sample, schedule, export)."
+
+[[bin]]
+name = "openpath-cli"
+path = "src/main.rs"
+
+[dependencies]
+openpath-core.workspace = true
+openpath-schedule.workspace = true
+openpath-files.workspace = true
+openpath-mspdi.workspace = true
+chrono.workspace = true

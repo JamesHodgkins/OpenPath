@@ -1,13 +1,14 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/domain",
-    "crates/interop-mpp",
-    "crates/interop-mspdi",
-    "crates/schedule",
-    "crates/store",
-    "crates/cli",
-    "crates/op-ui",
+    "crates/openpath-core",
+    "crates/openpath-schedule",
+    "crates/openpath-files",
+    "crates/openpath-mpp",
+    "crates/openpath-mspdi",
+    "crates/openpath-ui",
+    "crates/openpath-app",
+    "crates/openpath-cli",
 ]
 
 [workspace.package]
@@ -15,6 +16,7 @@ version = "0.1.0"
 edition = "2021"
 license = "GPL-3.0-or-later"
 rust-version = "1.85"
+publish = false
 
 [workspace.dependencies]
 chrono = "0.4"
@@ -27,6 +29,12 @@ blake3 = "1"
 byteorder = "1"
 serde_json = "1"
 egui = "0.31"
+eframe = "0.31"
+openpath-core = { path = "crates/openpath-core" }
+openpath-schedule = { path = "crates/openpath-schedule" }
+openpath-files = { path = "crates/openpath-files" }
+openpath-mspdi = { path = "crates/openpath-mspdi" }
+openpath-ui = { path = "crates/openpath-ui" }
 
 [profile.release]
 lto = "thin"
