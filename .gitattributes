@@ -1,11 +1,11 @@
-# Normalize line endings across platforms.
-* text=auto
+# Keep line endings stable across Windows and Linux.
+* text=auto eol=lf
 
-# Rust sources are LF.
-*.rs text eol=lf
-*.toml text eol=lf
-*.md text eol=lf
-
-# Shell scripts and workflows must keep LF line endings even when checked out on Windows.
-*.sh text eol=lf
-*.yml text eol=lf
+# Binary files are never converted.
+*.png binary
+*.jpg binary
+*.bmp binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.ron binary
