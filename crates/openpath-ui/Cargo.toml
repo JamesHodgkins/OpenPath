@@ -3,7 +3,6 @@ name = "openpath-ui"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-rust-version.workspace = true
 publish.workspace = true
 description = "OpenPath theme and widgets on egui: ribbon, menus, tabs and icons."
 
