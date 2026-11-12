@@ -2,7 +2,7 @@
 
 A project scheduler written in Rust, using egui for the interface. It opens Microsoft Project files, lets you edit the plan on a task sheet beside a Gantt chart, and schedules it with Microsoft Project-compatible rules.
 
-**Status:** Phase 0, an engineering spike. The scheduling engine (calendars, critical path, constraints, slack), the native `.opath` file, MSPDI export, `.mpp` import and a first task sheet with Gantt chart work. Most of the planned feature set is not built yet. The specification is in `private/specification-v1.1.md`.
+**Status:** Phase 0, an engineering spike. The scheduling engine (calendars, critical path, constraints, slack), the native `.opath` file, MSPDI export, `.mpp` import and a first task sheet with Gantt chart work. Most of the planned feature set is not built yet. The specification is kept outside the repository.
 
 ## Layout
 

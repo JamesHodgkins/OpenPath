@@ -3,6 +3,7 @@
 OpenPath: a Rust desktop project scheduler on egui/eframe with Microsoft Project interoperability. Windows and Linux are the targets. Licence GPL-3.0-or-later. One of three sibling apps with OpenDraft and OpenCalc (`../OpenDraft`, `../OpenCalc`); keep the three consistent.
 
 ## Read first
+`private/` is git-ignored: the specification and status notes live there on the maintainer's disk only, so they are never committed and nothing in code or tests may depend on them.
 - `private/specification-v1.1.md`: the specification (section numbers are cited in code comments). Appendix G logs decisions; Appendix H is the shared house style.
 - `private/phase0/STATUS.md`: what Phase 0 has done and what is open.
 

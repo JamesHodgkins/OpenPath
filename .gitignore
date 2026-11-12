@@ -11,5 +11,8 @@ Thumbs.db
 .DS_Store
 desktop.ini
 
+# Specification, status notes and scratch (kept on the maintainer's disk)
+/private/
+
 # Packaged builds
 /dist/
