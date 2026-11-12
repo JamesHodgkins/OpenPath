@@ -1,0 +1,13 @@
+# Editor settings. Source files use LF line endings on every platform (see
+# .gitattributes and rustfmt.toml). On Windows, set `git config core.autocrlf false`
+# in your clone, or `cargo fmt --check` will fail on CRLF files.
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+
+[*.rs]
+indent_style = space
+indent_size = 4

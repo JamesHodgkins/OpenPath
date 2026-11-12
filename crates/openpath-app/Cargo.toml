@@ -11,6 +11,9 @@ description = "OpenPath desktop application (egui / eframe)."
 name = "openpath"
 path = "src/main.rs"
 
+[lints]
+workspace = true
+
 [dependencies]
 openpath-core.workspace = true
 openpath-schedule.workspace = true

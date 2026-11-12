@@ -11,6 +11,9 @@ description = "OpenPath headless command-line tool (sample, schedule, export)."
 name = "openpath-cli"
 path = "src/main.rs"
 
+[lints]
+workspace = true
+
 [dependencies]
 openpath-core.workspace = true
 openpath-schedule.workspace = true

@@ -7,6 +7,9 @@ rust-version.workspace = true
 publish.workspace = true
 description = "Microsoft Project XML (MSPDI) reading and writing."
 
+[lints]
+workspace = true
+
 [dependencies]
 openpath-core.workspace = true
 chrono.workspace = true

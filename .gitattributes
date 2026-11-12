@@ -5,3 +5,7 @@
 *.rs text eol=lf
 *.toml text eol=lf
 *.md text eol=lf
+
+# Shell scripts and workflows must keep LF line endings even when checked out on Windows.
+*.sh text eol=lf
+*.yml text eol=lf

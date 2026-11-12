@@ -1,0 +1,28 @@
+# Settings for `cargo about`, which writes THIRD-PARTY-LICENSES (the notices
+# the licences of our dependencies require us to ship with the programs). The
+# list of accepted licences is the one in `deny.toml`.
+accepted = [
+    "GPL-3.0-or-later",
+    # mpxj-rs (the .mpp reader): statically linked under LGPL section 3, which
+    # GPL-3.0-or-later allows (spec section 0.2).
+    "LGPL-2.1-or-later",
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "ISC",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Zlib",
+    "Unicode-3.0",
+    "0BSD",
+    "BSL-1.0",
+    "Unlicense",
+    "CDLA-Permissive-2.0",
+    "OFL-1.1",
+    "Ubuntu-font-1.0",
+]
+targets = ["x86_64-pc-windows-msvc", "x86_64-unknown-linux-gnu"]
+ignore-dev-dependencies = true
+ignore-build-dependencies = true
+# Our own crates (publish = false) are not third-party software.
+private = { ignore = true }

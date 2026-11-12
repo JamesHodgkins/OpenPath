@@ -1,5 +1,15 @@
-/target
+# Build output
+/target/
 **/*.rs.bk
+
+# Editor and OS files
+.vscode/
+.idea/
 *.swp
-.DS_Store
+*~
 Thumbs.db
+.DS_Store
+desktop.ini
+
+# Packaged builds
+/dist/

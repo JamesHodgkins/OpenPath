@@ -1,0 +1,30 @@
+# Licence policy for `cargo deny check licenses` (CI runs it). OpenPath is
+# GPL-3.0-or-later; everything it links must be under one of these. A new
+# dependency whose licence is not listed fails the build, so someone looks at
+# it before it ships (and its notice is added to THIRD-PARTY-LICENSES, made by
+# `scripts/third_party.sh`; keep `about.toml`'s list the same as this one).
+[graph]
+targets = ["x86_64-pc-windows-msvc", "x86_64-unknown-linux-gnu"]
+
+[licenses]
+allow = [
+    "GPL-3.0-or-later",
+    # mpxj-rs (the .mpp reader): statically linked under LGPL section 3, which
+    # GPL-3.0-or-later allows (spec section 0.2).
+    "LGPL-2.1-or-later",
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "ISC",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Zlib",
+    "Unicode-3.0",
+    "0BSD",
+    "BSL-1.0",
+    "Unlicense",
+    "CDLA-Permissive-2.0",
+    "OFL-1.1",
+    "Ubuntu-font-1.0",
+]
+confidence-threshold = 0.8

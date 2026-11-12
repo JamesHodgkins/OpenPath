@@ -7,6 +7,9 @@ rust-version.workspace = true
 publish.workspace = true
 description = "OpenPath native file format (.opath): container, checksums, migrations and atomic save."
 
+[lints]
+workspace = true
+
 [dependencies]
 openpath-core.workspace = true
 serde.workspace = true

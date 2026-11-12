@@ -1,0 +1,6 @@
+# Windows builds link the C runtime into the program, so it runs on a machine
+# without the Visual C++ Redistributable ("VCRUNTIME140.dll was not found").
+# `RUSTFLAGS` in the environment replaces this setting, so the workflows set the
+# same flag themselves.
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]

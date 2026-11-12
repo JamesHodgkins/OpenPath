@@ -11,6 +11,13 @@ members = [
     "crates/openpath-cli",
 ]
 
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+dbg_macro = "warn"
+todo = "warn"
+
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
