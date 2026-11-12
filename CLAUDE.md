@@ -17,6 +17,7 @@ OpenPath: a Rust desktop project scheduler on egui/eframe with Microsoft Project
 ## Conventions
 - No `unwrap`, `todo!`, `dbg!` or prints in production code; `unsafe` is forbidden (the lints are in the workspace `Cargo.toml`; clippy does not yet enforce `unwrap` here, but new code should not add them).
 - Files stay under about 400 production lines.
+- Keep the family consistent: when you change lints, CI, licence lists or policy files, make the same change in the siblings and in `../OpenAppTemplate` (the scaffold new apps start from).
 - Rust types from `mpxj-rs` (`Rc<RefCell<..>>`) never leave `openpath-mpp`.
 
 ## Checks (CI runs these on Windows and Linux)

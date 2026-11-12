@@ -3,7 +3,6 @@ name = "openpath-mpp"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-rust-version.workspace = true
 publish.workspace = true
 description = "Microsoft Project (.mpp) import through mpxj-rs, converted to the OpenPath model."
 
