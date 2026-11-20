@@ -32,4 +32,7 @@ jobs:
           bash scripts/third_party.sh "$RUNNER_TEMP/THIRD-PARTY-LICENSES.txt"
       - run: cargo fmt --all --check
       - run: cargo clippy --workspace --all-targets
+      # As the release packages are built: without debug assertions, so code
+      # used only by debug checks shows up here and not at release time.
+      - run: cargo clippy --workspace --release
       - run: cargo test --workspace
